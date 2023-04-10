@@ -1,9 +1,8 @@
 package com.example.demo.service;
 
-import com.example.demo.dao.NotepadRepository;
+import com.example.demo.controller.dto.RequestNotepad;
 import com.example.demo.domain.Notepad;
-import com.example.demo.dto.RequestNotepad;
-import com.example.demo.dto.ResponseNotepad;
+import com.example.demo.repository.NotepadRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -18,27 +17,27 @@ public class NotepadService {
     private final NotepadRepository notepadRepository;
     private final ModelMapper modelMapper;  // Object에 있는 필드값들을 자동으로 원하는 Object로 Mapping 시킴
 
-    public ResponseNotepad save(RequestNotepad requestNotepad){
+    public Notepad save(RequestNotepad requestNotepad){
         Notepad notepad = notepadRepository.save(requestNotepad.toEntity());
-        return modelMapper.map(notepad, ResponseNotepad.class);
+        return modelMapper.map(notepad, Notepad.class);
     }
 
-    public ResponseNotepad update(RequestNotepad requestNotepad){
+    public Notepad update(RequestNotepad requestNotepad){
         Notepad notepad = notepadRepository.save(requestNotepad.toEntity());
-        return  modelMapper.map(notepad, ResponseNotepad.class);
+        return  modelMapper.map(notepad, Notepad.class);
     }
 
-    public List<ResponseNotepad> getList() {
+    public List<Notepad> getList() {
         List<Notepad> noteList = notepadRepository.findAll();
 
         return noteList.stream()
-                .map(member -> modelMapper.map(member, ResponseNotepad.class))
+                .map(member -> modelMapper.map(member, Notepad.class))
                 .collect(Collectors.toList());
     }
 
-    public ResponseNotepad get(Long id) {
+    public Notepad get(Long id) {
         Notepad notepad = notepadRepository.findById(id).orElseThrow(IllegalArgumentException::new);
-        return modelMapper.map(notepad,ResponseNotepad.class);
+        return modelMapper.map(notepad,Notepad.class);
     }
 
     public void delete(Long id) {

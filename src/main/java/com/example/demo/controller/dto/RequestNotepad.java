@@ -1,10 +1,10 @@
-package com.example.demo.dto;
+package com.example.demo.controller.dto;
 
 import com.example.demo.domain.Notepad;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
+
 @Setter
 public class RequestNotepad {
 
