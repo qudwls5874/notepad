@@ -4,13 +4,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-@Setter
+//@Setter
 public class ResponseNotped {
 
     private Long no;
     private String text;
 
-    public String resourceLocation(){return "/Notepad/"+no;}
+    //public String resourceLocation(){return "/Notepad/"+no;}
 
 /*
     private String statusCode;
