@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.controller.dto.RequestNotepad;
+import com.example.demo.controller.dto.ResponseNotped;
 import com.example.demo.domain.Notepad;
 import com.example.demo.repository.NotepadRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,27 +18,24 @@ public class NotepadService {
     private final NotepadRepository notepadRepository;
     private final ModelMapper modelMapper;  // Object에 있는 필드값들을 자동으로 원하는 Object로 Mapping 시킴
 
-    public Notepad save(RequestNotepad requestNotepad){
-        Notepad notepad = notepadRepository.save(requestNotepad.toEntity());
-        return modelMapper.map(notepad, Notepad.class);
+    public ResponseNotped save(RequestNotepad requestNotepad){
+        return modelMapper.map(notepadRepository.save(requestNotepad.toEntity()), ResponseNotped.class);
     }
 
-    public Notepad update(RequestNotepad requestNotepad){
-        Notepad notepad = notepadRepository.save(requestNotepad.toEntity());
-        return  modelMapper.map(notepad, Notepad.class);
+    public ResponseNotped update(RequestNotepad requestNotepad){
+        return  modelMapper.map(notepadRepository.save(requestNotepad.toEntity()), ResponseNotped.class);
     }
 
-    public List<Notepad> getList() {
+    public List<ResponseNotped> getList() {
         List<Notepad> noteList = notepadRepository.findAll();
 
         return noteList.stream()
-                .map(member -> modelMapper.map(member, Notepad.class))
+                .map(member -> modelMapper.map(member, ResponseNotped.class))
                 .collect(Collectors.toList());
     }
 
-    public Notepad get(Long id) {
-        Notepad notepad = notepadRepository.findById(id).orElseThrow(IllegalArgumentException::new);
-        return modelMapper.map(notepad,Notepad.class);
+    public ResponseNotped get(Long id) {
+        return modelMapper.map(notepadRepository.findById(id).orElseThrow(IllegalArgumentException::new),ResponseNotped.class);
     }
 
     public void delete(Long id) {

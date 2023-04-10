@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.controller.dto.RequestNotepad;
+import com.example.demo.controller.dto.ResponseNotped;
 import com.example.demo.domain.Notepad;
 import com.example.demo.service.NotepadService;
 import lombok.RequiredArgsConstructor;
@@ -18,21 +19,21 @@ public class NotepadController {
     private final NotepadService notepadService;
 
     @GetMapping
-    public ResponseEntity<List<Notepad>> getNotepads(){
-        List<Notepad> notepadList = notepadService.getList();
+    public ResponseEntity<List<ResponseNotped>> getNotepads(){
+        List<ResponseNotped> notepadList = notepadService.getList();
         return ResponseEntity.ok(notepadList);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Notepad> getNotepad(@PathVariable Long id){
-        Notepad notepad = notepadService.get(id);
+    public ResponseEntity<ResponseNotped> getNotepad(@PathVariable Long id){
+        ResponseNotped notepad = notepadService.get(id);
 
         return ResponseEntity.ok(notepad);
     }
 
     @PostMapping
-    public ResponseEntity<Notepad> save(@RequestBody RequestNotepad requestMember){
-        Notepad notepad = notepadService.save(requestMember);
+    public ResponseEntity<ResponseNotped> save(@RequestBody RequestNotepad requestMember){
+        ResponseNotped notepad = notepadService.save(requestMember);
         //notepad.setStatusCode(HttpStatus.CREATED.toString());
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -41,9 +42,9 @@ public class NotepadController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Notepad> update(@PathVariable Long id, @RequestBody RequestNotepad requestNotepad){
+    public ResponseEntity<ResponseNotped> update(@PathVariable Long id, @RequestBody RequestNotepad requestNotepad){
         requestNotepad.setNo(id);
-        Notepad notepad = notepadService.update(requestNotepad);
+        ResponseNotped notepad = notepadService.update(requestNotepad);
         //return ResponseEntity.status(HttpStatus.OK).build();
         return ResponseEntity.status(HttpStatus.OK)
                 .header("Location", notepad.getNo().toString())
@@ -52,13 +53,13 @@ public class NotepadController {
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Notepad> delete(@PathVariable Long id){
+    public ResponseEntity<ResponseNotped> delete(@PathVariable Long id){
         notepadService.delete(id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping()
-    public ResponseEntity<Notepad> allDelete(){
+    public ResponseEntity<ResponseNotped> allDelete(){
         notepadService.allDelete();
         return ResponseEntity.status(HttpStatus.OK).build();
     }
