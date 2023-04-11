@@ -20,13 +20,13 @@ public class NotepadController {
 
     @GetMapping
     public ResponseEntity<List<ResponseNotped>> getNotepads(){
-        List<ResponseNotped> notepadList = notepadService.getList();
+        List<ResponseNotped> notepadList = notepadService.getNotepads();
         return ResponseEntity.ok(notepadList);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ResponseNotped> getNotepad(@PathVariable Long id){
-        ResponseNotped notepad = notepadService.get(id);
+        ResponseNotped notepad = notepadService.getNotepad(id);
 
         return ResponseEntity.ok(notepad);
     }
