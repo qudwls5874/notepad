@@ -1,8 +1,10 @@
 package com.example.demo.controller;
 
 import com.example.demo.controller.dto.RequestNotepad;
+import com.example.demo.controller.dto.ResponseMember;
 import com.example.demo.controller.dto.ResponseNotped;
-import com.example.demo.domain.Notepad;
+import com.example.demo.domain.Member;
+import com.example.demo.service.MemberService;
 import com.example.demo.service.NotepadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,7 @@ import java.util.List;
 public class NotepadController {
 
     private final NotepadService notepadService;
+    private final MemberService memberService;
 
     @GetMapping
     public ResponseEntity<List<ResponseNotped>> getNotepads(){
@@ -24,17 +27,28 @@ public class NotepadController {
         return ResponseEntity.ok(notepadList);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ResponseNotped> getNotepad(@PathVariable Long id){
-        ResponseNotped notepad = notepadService.getNotepad(id);
+    @GetMapping("/{memberId}")
+    public ResponseEntity<List<ResponseNotped>> getNotepad(@PathVariable String memberId){
 
+        ResponseMember resultMember = memberService.getMember(memberId);
+
+        if (resultMember.getMemberId().equals(""))
+            throw  new IllegalArgumentException("존재하지 않는 아이디입니다.");
+
+        List<ResponseNotped> notepad = notepadService.getNotepad(new Member(resultMember.getMemberId(), resultMember.getPwd()));
         return ResponseEntity.ok(notepad);
     }
 
-    @PostMapping
-    public ResponseEntity<ResponseNotped> save(@RequestBody RequestNotepad requestMember){
-        ResponseNotped notepad = notepadService.save(requestMember);
-        //notepad.setStatusCode(HttpStatus.CREATED.toString());
+    @PostMapping("/{memberId}")
+    public ResponseEntity<ResponseNotped> save(@PathVariable String memberId, @RequestBody RequestNotepad requestNotepad){
+
+        ResponseMember member = memberService.getMember(memberId);
+
+        if (member.getMemberId().equals(""))
+            throw  new IllegalArgumentException("존재하지 않는 아이디입니다.");
+
+        requestNotepad.setMember(new Member(member.getMemberId(), member.getMemberId()));
+        ResponseNotped notepad = notepadService.save(requestNotepad);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .header("Location", notepad.getNo().toString())
@@ -63,6 +77,8 @@ public class NotepadController {
         notepadService.allDelete();
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+
 
 
 

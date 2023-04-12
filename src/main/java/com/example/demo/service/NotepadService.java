@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.controller.dto.RequestNotepad;
 import com.example.demo.controller.dto.ResponseNotped;
+import com.example.demo.domain.Member;
 import com.example.demo.domain.Notepad;
 import com.example.demo.repository.NotepadRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,29 +18,31 @@ import java.util.stream.Stream;
 public class NotepadService {
 
     private final NotepadRepository notepadRepository;
-    //private final ModelMapper modelMapper;  // Object에 있는 필드값들을 자동으로 원하는 Object로 Mapping 시킴
 
     public ResponseNotped save(RequestNotepad requestNotepad){
         Notepad resultNotepad = notepadRepository.save(requestNotepad.toEntity());
-        return new ResponseNotped(resultNotepad.getNo(), resultNotepad.getText());
+        return new ResponseNotped(resultNotepad.getNo(), resultNotepad.getText() , resultNotepad.getMember());
     }
 
     public ResponseNotped update(RequestNotepad requestNotepad){
         Notepad resultNotepad = notepadRepository.save(requestNotepad.toEntity());
-        return new ResponseNotped(resultNotepad.getNo(), resultNotepad.getText());
+        return new ResponseNotped(resultNotepad.getNo(), resultNotepad.getText() , resultNotepad.getMember());
     }
 
     public List<ResponseNotped> getNotepads() {
 
         List<Notepad> noteList = notepadRepository.findAll();
         return noteList.stream()
-                .map(notepad -> new ResponseNotped(notepad.getNo(), notepad.getText()))
+                .map(notepad -> new ResponseNotped(notepad.getNo(), notepad.getText() , notepad.getMember()))
                 .collect(Collectors.toList());
     }
 
-    public ResponseNotped getNotepad(Long id) {
-        Notepad resultNotepad = notepadRepository.findById(id).orElseThrow(IllegalArgumentException::new);
-        return new ResponseNotped(resultNotepad.getNo(), resultNotepad.getText());
+    public List<ResponseNotped> getNotepad(Member member) {
+        List<Notepad> resultNotepads = notepadRepository.selectNotpad(member);
+
+        return resultNotepads.stream()
+                .map(notepad -> new ResponseNotped(notepad.getNo(), notepad.getText(), notepad.getMember()))
+                .collect(Collectors.toList());
     }
 
     public void delete(Long id) {
