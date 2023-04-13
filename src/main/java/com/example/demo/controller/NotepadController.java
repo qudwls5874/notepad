@@ -30,7 +30,9 @@ public class NotepadController {
     @GetMapping("/{memberId}")
     public ResponseEntity<List<ResponseNotped>> getNotepad(@PathVariable String memberId){
 
-        ResponseMember resultMember = memberService.getMember(memberId);
+        Member member = memberService.getMember(memberId);
+
+        ResponseMember resultMember = new ResponseMember(member.getMemberId(), member.getPwd());
 
         if (resultMember.getMemberId().equals(""))
             throw  new IllegalArgumentException("존재하지 않는 아이디입니다.");
@@ -42,12 +44,14 @@ public class NotepadController {
     @PostMapping("/{memberId}")
     public ResponseEntity<ResponseNotped> save(@PathVariable String memberId, @RequestBody RequestNotepad requestNotepad){
 
-        ResponseMember member = memberService.getMember(memberId);
+        Member member = memberService.getMember(memberId);
 
-        if (member.getMemberId().equals(""))
+        ResponseMember resultMember = new ResponseMember(member.getMemberId(), member.getPwd());
+
+        if (resultMember.getMemberId().equals(""))
             throw  new IllegalArgumentException("존재하지 않는 아이디입니다.");
 
-        requestNotepad.setMember(new Member(member.getMemberId(), member.getMemberId()));
+        requestNotepad.setMember(new Member(resultMember.getMemberId(), resultMember.getMemberId()));
         ResponseNotped notepad = notepadService.save(requestNotepad);
 
         return ResponseEntity.status(HttpStatus.CREATED)

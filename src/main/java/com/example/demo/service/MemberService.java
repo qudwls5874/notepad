@@ -18,26 +18,20 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    public List<ResponseMember> getMembers(){
-        List<Member> members =  memberRepository.findAll();
-
-        return members.stream()
-                .map(member -> new ResponseMember(member.getMemberId(), member.getPwd()))
-                .collect(Collectors.toList());
+    public List<Member> getMembers(){
+        return memberRepository.findAll();
     }
 
-    public ResponseMember getMember(String id){
-        Member resultMember = memberRepository.findById(id).orElseThrow(IllegalArgumentException::new);
-        return new ResponseMember(resultMember.getMemberId(), resultMember.getPwd());
+    public Member getMember(String id){
+        return memberRepository.findById(id).orElseThrow(IllegalArgumentException::new);
     }
 
-    public ResponseMember save(RequestMember requestUser){
-        if (memberRepository.existsByMemberId(requestUser.getMemberId()))
-            throw  new IllegalArgumentException("이미 존재하는 아이디입니다.");
-
-        Member resultMember = memberRepository.save(requestUser.toEntity());
-        return new ResponseMember(resultMember.getMemberId(), resultMember.getPwd());
+    public Member save(RequestMember requestUser){
+        return memberRepository.save(requestUser.toEntity());
     }
 
+    public boolean checkMemberId(String memberId){
+        return memberRepository.existsByMemberId(memberId);
+    }
 
 }
