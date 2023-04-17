@@ -1,7 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.controller.dto.RequestNotepad;
-import com.example.demo.controller.dto.ResponseNotped;
+import com.example.demo.controller.dto.ResponseNotpad;
 import com.example.demo.domain.Member;
 import com.example.demo.domain.Notepad;
 import com.example.demo.repository.NotepadRepository;
@@ -19,42 +19,13 @@ public class NotepadService {
 
     private final NotepadRepository notepadRepository;
 
-    public ResponseNotped save(RequestNotepad requestNotepad){
-        Notepad resultNotepad = notepadRepository.save(requestNotepad.toEntity());
-        return new ResponseNotped(resultNotepad.getNo(), resultNotepad.getText() , resultNotepad.getMember());
-    }
 
-    public ResponseNotped update(RequestNotepad requestNotepad){
-        Notepad resultNotepad = notepadRepository.save(requestNotepad.toEntity());
-        return new ResponseNotped(resultNotepad.getNo(), resultNotepad.getText() , resultNotepad.getMember());
-    }
-
-    public List<ResponseNotped> getNotepads() {
+    public List<ResponseNotpad> getNotepads() {
 
         List<Notepad> noteList = notepadRepository.findAll();
         return noteList.stream()
-                .map(notepad -> new ResponseNotped(notepad.getNo(), notepad.getText() , notepad.getMember()))
+                .map(notepad -> new ResponseNotpad(notepad.getNo(), notepad.getText() , notepad.getMember()))
                 .collect(Collectors.toList());
-    }
-
-    public List<ResponseNotped> getNotepad(Member member) {
-        List<Notepad> resultNotepads = notepadRepository.selectNotpad(member);
-
-        return resultNotepads.stream()
-                .map(notepad -> new ResponseNotped(notepad.getNo(), notepad.getText(), notepad.getMember()))
-                .collect(Collectors.toList());
-    }
-
-    public void delete(Long id) {
-        if(notepadRepository.existsById(id)){
-            notepadRepository.deleteById(id);
-        }else{
-            throw new IllegalArgumentException();
-        }
-    }
-
-    public void allDelete(){
-        notepadRepository.deleteAll();
     }
 
 }

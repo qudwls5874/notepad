@@ -2,8 +2,10 @@ package com.example.demo.controller;
 
 import com.example.demo.controller.dto.RequestNotepad;
 import com.example.demo.controller.dto.ResponseMember;
-import com.example.demo.controller.dto.ResponseNotped;
+import com.example.demo.controller.dto.ResponseNotpad;
 import com.example.demo.domain.Member;
+import com.example.demo.domain.Notepad;
+import com.example.demo.service.MemberNoteService;
 import com.example.demo.service.MemberService;
 import com.example.demo.service.NotepadService;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController // REST 컨트롤러 클래스
 @RequestMapping("/notepads")
@@ -19,68 +22,65 @@ import java.util.List;
 public class NotepadController {
 
     private final NotepadService notepadService;
-    private final MemberService memberService;
+    private final MemberNoteService memberNoteService;
 
+    // 전체 조회
     @GetMapping
-    public ResponseEntity<List<ResponseNotped>> getNotepads(){
-        List<ResponseNotped> notepadList = notepadService.getNotepads();
+    public ResponseEntity<List<ResponseNotpad>> getNotepads(){
+        List<ResponseNotpad> notepadList = notepadService.getNotepads();
         return ResponseEntity.ok(notepadList);
     }
 
+    // 부분 조회
     @GetMapping("/{memberId}")
-    public ResponseEntity<List<ResponseNotped>> getNotepad(@PathVariable String memberId){
+    public ResponseEntity<List<ResponseNotpad>> getMemberNote(@PathVariable String memberId){
 
-        Member member = memberService.getMember(memberId);
+        List<Notepad> result = memberNoteService.select(memberId);
 
-        ResponseMember resultMember = new ResponseMember(member.getMemberId(), member.getPwd());
-
-        if (resultMember.getMemberId().equals(""))
-            throw  new IllegalArgumentException("존재하지 않는 아이디입니다.");
-
-        List<ResponseNotped> notepad = notepadService.getNotepad(new Member(resultMember.getMemberId(), resultMember.getPwd()));
-        return ResponseEntity.ok(notepad);
+        return ResponseEntity.ok(
+                result.stream()
+                        .map(notepad -> new ResponseNotpad(notepad.getNo(), notepad.getText(), notepad.getMember()))
+                        .collect(Collectors.toList())
+        );
     }
 
+    // 저장
     @PostMapping("/{memberId}")
-    public ResponseEntity<ResponseNotped> save(@PathVariable String memberId, @RequestBody RequestNotepad requestNotepad){
-
-        Member member = memberService.getMember(memberId);
-
-        ResponseMember resultMember = new ResponseMember(member.getMemberId(), member.getPwd());
-
-        if (resultMember.getMemberId().equals(""))
-            throw  new IllegalArgumentException("존재하지 않는 아이디입니다.");
-
-        requestNotepad.setMember(new Member(resultMember.getMemberId(), resultMember.getMemberId()));
-        ResponseNotped notepad = notepadService.save(requestNotepad);
-
+    public ResponseEntity<ResponseNotpad> save(@PathVariable String memberId, @RequestBody RequestNotepad requestNotepad){
+        Notepad result = memberNoteService.save(memberId, requestNotepad);
+        ResponseNotpad notepad = new ResponseNotpad(result.getNo(), result.getText(), result.getMember());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .header("Location", notepad.getNo().toString())
                 .body(notepad);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ResponseNotped> update(@PathVariable Long id, @RequestBody RequestNotepad requestNotepad){
-        requestNotepad.setNo(id);
-        ResponseNotped notepad = notepadService.update(requestNotepad);
-        //return ResponseEntity.status(HttpStatus.OK).build();
+    // 수정
+    @PutMapping("/{memberId}")
+    public ResponseEntity<ResponseNotpad> update(@PathVariable String memberId, @RequestBody RequestNotepad requestNotepad){
+        Notepad result = memberNoteService.update(memberId, requestNotepad);
+        ResponseNotpad responseNotpad = new ResponseNotpad(result.getNo(), result.getText(), result.getMember());
         return ResponseEntity.status(HttpStatus.OK)
-                .header("Location", notepad.getNo().toString())
-                .body(notepad);
+                .header("Location", responseNotpad.getNo().toString())
+                .body(responseNotpad);
     }
 
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseNotped> delete(@PathVariable Long id){
-        notepadService.delete(id);
+    // 부분삭제
+    @DeleteMapping("/{memberId}/{no}")
+    public ResponseEntity<ResponseNotpad> delete(@PathVariable String memberId, @PathVariable Long no){
+        memberNoteService.delete(memberId, no);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @DeleteMapping()
-    public ResponseEntity<ResponseNotped> allDelete(){
-        notepadService.allDelete();
+
+    // 작성자 기준 전체삭제
+    @DeleteMapping("/{memberId}")
+    public ResponseEntity<ResponseNotpad> allDelete(@PathVariable String memberId){
+        memberNoteService.allDelete(memberId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+
+
 
 
 

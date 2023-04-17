@@ -11,7 +11,6 @@ public class RequestNotepad {
 
     private Long no;
     private String text;
-
     private Member member;
 
     public Notepad toEntity(){

@@ -2,7 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.controller.dto.RequestMember;
 import com.example.demo.controller.dto.ResponseMember;
-import com.example.demo.controller.dto.ResponseNotped;
+import com.example.demo.controller.dto.ResponseNotpad;
 import com.example.demo.domain.Member;
 import com.example.demo.domain.Notepad;
 import com.example.demo.repository.MemberRepository;
